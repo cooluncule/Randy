@@ -1,10 +1,17 @@
-FROM dorowu/ubuntu-desktop-lxde-vnc:focal
+# Use a Windows base image
+FROM mcr.microsoft.com/windows:10.0.19041.685
 
-# Expose the NoVNC port
+# Expose the desired port
 EXPOSE 80
 
-# Set the screen resolution (this can be overridden by an environment variable)
+# Set an environment variable for screen resolution (you'll need an application to support VNC on Windows)
 ENV RESOLUTION=1600x761
 
-# Start the VNC server with the desired resolution
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/supervisord.conf"]
+# Add VNC server setup (example with TightVNC as a placeholder; install any necessary components)
+RUN powershell -Command \
+    Invoke-WebRequest -Uri https://www.tightvnc.com/download/2.8.63/tightvnc-2.8.63-setup-64bit.msi -OutFile C:\tightvnc.msi; \
+    Start-Process msiexec.exe -ArgumentList '/i', 'C:\tightvnc.msi', '/quiet', '/norestart' -NoNewWindow -Wait; \
+    Remove-Item -Path C:\tightvnc.msi
+
+# Set the command to start the VNC server (example command; adjust based on your setup)
+CMD ["C:\\Program Files\\TightVNC\\tvnserver.exe", "-run"]
